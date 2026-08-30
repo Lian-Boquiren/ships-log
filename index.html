@@ -17,9 +17,19 @@
     --ink:#26221B;
     --foam:#F8F5EC;
     --wave-line: rgba(248,245,236,0.18);
+    /* To add a background photo to the title page: paste an image URL below,
+       replacing "none". Example: url('images/mybg.jpg')  or  url('https://...')
+       Leave it as "none" for the default plain background. */
+    --title-bg-image: url('images/title-bg.png');
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
+  [contenteditable="true"]{ cursor:text; transition:background .15s; }
+  [contenteditable="true"]:hover{ background:#F5E7C4; border-radius:2px; }
+  [contenteditable="true"]:focus{
+    outline:2px dashed var(--brass); outline-offset:3px;
+    background:#F0DFAF; border-radius:2px;
+  }
   body{
     background:var(--deep-sea);
     color:var(--ink);
@@ -83,16 +93,25 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     text-align:center; padding:80px 20px 40px;
     position:relative;
+    background-image: var(--title-bg-image);
+    background-size:cover; background-position:center;
   }
+  .title-hero::before{
+    content:""; position:absolute; inset:0; z-index:0;
+    background:linear-gradient(180deg, rgba(11,24,38,0.72), rgba(11,24,38,0.9));
+  }
+  .title-hero > *{ position:relative; z-index:1; }
   .compass-rose{ width:120px; height:120px; opacity:.9; margin-bottom:18px; }
   .eyebrow{
     font-family:'Courier Prime', monospace; letter-spacing:.35em; text-transform:uppercase;
     font-size:.72rem; color:var(--brass); margin-bottom:18px;
+    text-shadow:0 1px 8px rgba(0,0,0,.6);
   }
   .ships-log-script{
     font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600;
     color:var(--brass); font-size:clamp(2.2rem,6vw,3.6rem); line-height:1;
     margin:0 0 6px;
+    text-shadow:0 2px 14px rgba(0,0,0,.7);
   }
   .title-hero h1{
     font-family:'Playfair Display', serif; font-weight:800;
@@ -103,6 +122,16 @@
   .scroll-hint{
     font-family:'Courier Prime', monospace; font-size:.75rem; color:var(--parchment-dark);
     letter-spacing:.1em; margin-top:34px; opacity:.75;
+  }
+  .hero-cta-wrap{
+    text-align:center; padding-bottom:60px; position:relative;
+    display:flex; align-items:center; justify-content:center; gap:0;
+  }
+  .pointer-chibi{
+    width:90px; height:auto; margin-left:-6px; transform:translateY(6px) scaleX(-1);
+  }
+  .header-decor{
+    display:block; margin:0 auto 6px; height:120px; width:auto;
   }
 
   .parchment-card{
@@ -214,16 +243,18 @@
     font-size:1.3rem; margin:0 0 10px;
   }
   .placeholder-box{
-    border:1px dashed var(--mid-ocean); background:rgba(46,92,122,0.06);
-    padding:16px 18px; border-radius:3px; color:#3a4a56; font-size:.92rem; line-height:1.6;
+    border:1px dashed var(--mid-ocean); background:#FFFFFF;
+    padding:16px 18px; border-radius:3px; color:#26221B; font-size:.92rem; line-height:1.6;
   }
 
   /* KWLSF manifest table */
   .manifest{
     margin-top:10px; border:1px solid var(--brass-dim); border-radius:3px; overflow:hidden;
+    background:#FFFFFF;
   }
   .manifest-row{
     display:grid; grid-template-columns:110px 1fr; border-top:1px solid rgba(158,122,46,0.35);
+    background:#FFFFFF;
   }
   .manifest-row:first-child{ border-top:none; }
   .manifest-label{
@@ -233,7 +264,7 @@
   }
   .manifest-label small{ font-family:'Lora',serif; text-transform:none; font-size:.7rem; opacity:.75; letter-spacing:0;}
   .manifest-value{
-    padding:14px 16px; font-size:.94rem; line-height:1.6; color:var(--ink);
+    padding:14px 16px; font-size:.94rem; line-height:1.6; color:#26221B; background:#FFFFFF;
   }
   .manifest-value[contenteditable="true"]{ outline:none; }
   .manifest-value[contenteditable="true"]:focus{ background:rgba(199,154,62,0.08); }
@@ -416,9 +447,9 @@
       <path d="M20 100 L100 88 L180 100 L100 112 Z" fill="#C79A3E" opacity=".55"/>
       <circle cx="100" cy="100" r="5" fill="#F8F5EC"/>
     </svg>
-    <div class="eyebrow">In partial fulfillment · PHYS 50</div>
-    <div class="ships-log-script">Ship's Log</div>
-    <h1>Sailing Through Physical Concepts</h1>
+    <div class="eyebrow" contenteditable="true">In partial fulfillment · PHYS 50</div>
+    <div class="ships-log-script" contenteditable="true">Ship's Log</div>
+    <h1 contenteditable="true">Sailing Through Physical Concepts</h1>
     <div class="scroll-hint">&#9660; scroll to read the entries below &#9660;</div>
   </div>
 
@@ -427,30 +458,30 @@
       <div class="stack">
         <div>
           <div class="log-heading">Welcome Aboard</div>
-          <p><strong>Welcome aboard!</strong> This ship's log contains all records of my journey through the raging currents of Physics. As I set sail on my learning voyage, I kindly invite you to follow the route I took to understand new concepts and information that I encountered.</p>
+          <p contenteditable="true"><strong>Welcome aboard!</strong> This ship's log contains all records of my journey through the raging currents of Physics. As I set sail on my learning voyage, I kindly invite you to follow the route I took to understand new concepts and information that I encountered.</p>
         </div>
         <div>
           <div class="log-heading">Why I Chose This Title</div>
-          <p>I chose <em>"Ship's Log: Sailing Through Physical Concepts"</em> because my learning journey in physics can be compared to a ship sailing the ocean. The waters aren't always calm — sometimes you have to push through storms and hardships to keep moving forward. This journal, then, is a compilation of everything I've learned along my physics voyage.</p>
+          <p contenteditable="true">I chose <em>"Ship's Log: Sailing Through Physical Concepts"</em> because my learning journey in physics can be compared to a ship sailing the ocean. The waters aren't always calm; sometimes you have to push through storms and hardships to keep moving forward. This journal, then, is a compilation of everything I've learned along my physics voyage.</p>
         </div>
         <div>
           <div class="log-heading">What's Inside This Log</div>
-          <p>Each stop on the voyage map is a <strong>port</strong> — one topic from our course guide. Every port holds my notes on the concept, a KWLSF manifest (what I <strong>K</strong>new, <strong>W</strong>anted to know, <strong>L</strong>earned, <strong>S</strong>uggest, and how I'm <strong>F</strong>eeling that week), and any diagrams, links, or media I gathered along the way.</p>
-          <span class="editme">EDIT ME — this paragraph is a draft. Rewrite it in your own words before submitting.</span>
+          <p contenteditable="true">Each stop on the voyage map is a <strong>port</strong> — one topic from our course guide. Every port holds my notes on the concept, a KWLSF manifest (what I <strong>K</strong>new, <strong>W</strong>anted to know, <strong>L</strong>earned, <strong>S</strong>uggest, and how I'm <strong>F</strong>eeling that week), and any media I gathered along the way.</p>
         </div>
       </div>
     </div>
   </div>
 
-  <div style="text-align:center; padding-bottom:60px;">
+  <div class="hero-cta-wrap">
     <button class="btn" onclick="showView('map')">Begin the Voyage &#8594;</button>
+    <img class="pointer-chibi" src="images/pointer-chibi.png" alt="" onerror="this.style.display='none'">
   </div>
 </section>
 
 <!-- ================= VOYAGE MAP ================= -->
 <section class="view" id="view-map">
   <div class="map-view">
-    <h2 class="map-title">The Voyage Map</h2>
+    <h2 class="map-title"><img class="header-decor" src="images/map-decor.png" alt="" onerror="this.style.display='none'"><br>The Voyage Map</h2>
     <div class="map-sub">Click a port to open that topic's log entry</div>
 
     <div class="route-wrap">
@@ -523,7 +554,7 @@
 <section class="view" id="view-portfolio">
   <div class="portfolio-view">
     <div class="portfolio-intro">
-      <h2>The Ship's Collection</h2>
+      <h2><img class="header-decor" src="images/portfolio-decor.png" alt="" onerror="this.style.display='none'"><br>The Ship's Collection</h2>
       <p>A compiled gallery of outputs from the voyage. Click an entry to open it and see every photo with its description.</p>
     </div>
     <div class="portfolio-grid" id="portfolio-grid"></div>
@@ -558,12 +589,12 @@
     </div>
     <div class="footer-col">
       <h5>Contact the Captain</h5>
-      <p contenteditable="true">EDIT ME — your.email@up.edu.ph</p>
-      <p contenteditable="true">EDIT ME — +63 9XX XXX XXXX</p>
+      <p contenteditable="true">lfboquiren@up.edu.ph</p>
+      <p contenteditable="true">+63 910 447 0357</p>
     </div>
     <div class="footer-col">
       <h5>University</h5>
-      <p contenteditable="true">EDIT ME — University of the Philippines Los Baños, College, Laguna 4030</p>
+      <p contenteditable="true">University of the Philippines Los Baños, College, Laguna 4030</p>
       <div class="footer-social">
         <a href="#" title="Facebook">f</a>
         <a href="#" title="Instagram">ig</a>
@@ -580,8 +611,14 @@
    using the "+ Add Port" and "+ Add Portfolio Entry" buttons.
    ========================================================= */
 let ports = [
-  { title:"Topic 1 — Rename Me", blurb:"One-line description of this topic.",
-    notes:"", k:"", w:"", l:"", s:"", f:"", reflection:"" },
+  { title:"Nature of Physics as a Science", blurb:"How science works as a process, and physics as the study of matter and energy.",
+    notes:"In our first lesson, we discussed the nature of physics as science, wherein science is defined not just as a collection of facts but a <strong>process</strong>, while physics, as a natural science, studies matter and energy. Aside from that, we also tackled the qualities of science such as being empirical, testable, creative, dynamic, and self-correcting. We differentiated a law from a theory, clarifying that a theory does not graduate to a law, as well as the human element of physics through collaboration, peer review, debate, and skepticism. The words that stuck to me for this lesson are that science does not happen in a vacuum; it is a human endeavor. Meaning to say, science is not a single idea but rather the compilation of all the contributions of previous scientists in the past, which is crucial as it laid the foundation for our modern knowledge in physics to exist. Even if it's right or wrong, their contributions are what made physics today possible.",
+    k:"I already knew that science involves observation and experimentation. I also knew that physics deals with the natural world, particularly matter and energy.",
+    w:"I wanted to understand how scientific knowledge changes, why incorrect theories can be accepted back then, and whether tentative science can ever lead us to absolute truth, since science is always subjected to changes.",
+    l:"<img src=\"images/nuclear-plant.jpg\" alt=\"\" onerror=\"this.style.display='none'\">I learned that science and physics do not simply pop out of nowhere but rather they are heavily influenced by the values and ethics of the scientists/physicists involved in the process of creating it. One example is the development and use of nuclear technology, which shows how the decisions and ethical responsibilities of scientists and physicists can have significant effects on society. It is true that nuclear technology can be useful in generating electricity and treating diseases, but it can also be misused as a weapon whose devastating cause is evident in the history of the world, such as the bombing of Hiroshima in 1945. That is why just because we are capable of creating something doesn't automatically mean that we should create it; scientists must always consider the possible consequences of how their discoveries are applied.<br><br><img src=\"images/lab-research.jpg\" alt=\"\" onerror=\"this.style.display='none'\">I also learned that society helps shape science, as science in nature always seeks answers; it answers to the needs and demands of society. A real life example is cancer research, as the large number of people affected by cancer creates a continuing need for better and safer treatments. According to the latest IARC Global Cancer Observatory estimates, 20.6 million people were diagnosed with cancer and 9.8 million died from cancer worldwide in 2024. Although treatments such as chemotherapy can help fight cancer, they can also affect healthy cells and cause side effects such as nausea, fatigue, hair loss, and other complications, thus creating a need for scientists to continue developing safer and more effective treatments. This shows how society's health problems and needs can influence the direction of scientific research.",
+    s:"My only suggestion is to keep the groupings in lectures, as it can provide additional info, and I can also learn from my classmates as well.",
+    f:"This week introduced me to a new side of physics. From my previous experience in physics subjects, the discussion mostly leaned on computation rather than the concepts themselves. This lesson broadened my perspective that physics is more than just knowing formulas but understanding the concepts behind them. The formulas, such as Newton's laws, are not just about numbers and substitution but about explaining how things work in the real world. I also became interested in how scientists were able to come up with the knowledge they contributed, such as Einstein's prediction of starlight in 1911, where Schwarzschild helped with the mathematical computations. This showed me that science is not done in a vacuum, but is a collaborative process where different people contribute to the development of knowledge.",
+    reflection:"<strong>Science Questions Everything</strong><br>According to Hank Green's discussion of \"Nullius in verba,\" or \"take nobody's word for it,\" in his video Intro to History of Science: Crash Course History of Science #1, it is the official motto of the Royal Society, the UK's national academy of science founded in 1660 and one of the oldest scientific institutions in the world. It made me realize that just because someone of high authority told you that something is true doesn't mean you automatically believe that it is true. Instead, scientific ideas must always be questioned, tested, and supported by evidence. This also reflects how science is tentative, because scientific knowledge is always subject to change when new evidence emerges. It is also dynamic and self-correcting, since scientists continuously examine existing ideas and correct them when they can no longer withstand the rigors of testing. In short, Nullius in verba tells us not to accept ideas blindly but to challenge them.<br><br><strong>Science is Cumulative but Not Simply Additive</strong><br>From another group's report, I learned that science is cumulative but not simply additive. At first, I understood \"cumulative\" as simply adding new knowledge to what was already discovered. However, I realized that scientific progress also involves questioning, correcting, and sometimes subtracting ideas when new evidence or information emerges that can challenge the credibility of the existing knowledge. This does not mean that the ideas we leave behind are completely useless. They can still help scientists identify limitations, ask new questions, and find better explanations. In this way, even mistakes and rejected theories can contribute to the development of science. Science is therefore not a straight path where one idea is simply placed on top of another, but a continuous process of testing, correcting, and rebuilding knowledge.<br><br><strong>From Giant to Giant</strong><br>The quote assigned to our group, \"One giant stands on the shoulders of another and thus sees further and further,\" reflects how scientific knowledge continues to develop through the contributions of different scientists. A scientist can build upon the discoveries and ideas of those who came before them, allowing them to understand things that previous generations could not. Thus, this allows scientists to further broaden the body of knowledge that we obtain. This connects to the idea that science is cumulative because every scientist becomes part of a continuous chain of knowledge, where one discovery can become the foundation for another." },
   { title:"Topic 2 — Rename Me", blurb:"One-line description of this topic.",
     notes:"", k:"", w:"", l:"", s:"", f:"", reflection:"" },
   { title:"Topic 3 — Rename Me", blurb:"One-line description of this topic.",
@@ -626,11 +663,8 @@ function buildPortList(){
 
     const actions = document.createElement('div');
     actions.className = 'port-actions';
-    actions.innerHTML = `
-      <button class="btn-small" data-act="edit">Edit</button>
-      <button class="btn-small" data-act="remove">Remove</button>`;
+    actions.innerHTML = `<button class="btn-small" data-act="edit">Edit</button>`;
     actions.querySelector('[data-act="edit"]').addEventListener('click', () => editPort(i));
-    actions.querySelector('[data-act="remove"]').addEventListener('click', () => removePort(i));
 
     row.appendChild(openBtn);
     row.appendChild(actions);
