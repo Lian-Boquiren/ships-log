@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ship's Log: Sailing Through Physical Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Playfair+Display:wght@500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep-sea:#132A42;
+    --mid-ocean:#2E5C7A;
+    --parchment:#F2E8D2;
+    --parchment-dark:#E4D5B0;
+    --brass:#C79A3E;
+    --brass-dim:#9E7A2E;
+    --ink:#26221B;
+    --foam:#F8F5EC;
+    --wave-line: rgba(248,245,236,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--deep-sea);
+    color:var(--ink);
+    font-family:'Lora', serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--brass); color:var(--deep-sea); }
+
+  /* ---------- Ambient ocean background ---------- */
+  .ocean-bg{
+    position:fixed; inset:0; z-index:-2;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(46,92,122,0.55), transparent 55%),
+      radial-gradient(ellipse at 85% 15%, rgba(199,154,62,0.10), transparent 50%),
+      linear-gradient(180deg, #0F2036 0%, #132A42 45%, #0C1C2E 100%);
+  }
+  .stars{ position:fixed; inset:0; z-index:-1; pointer-events:none; }
+  .stars span{
+    position:absolute; width:2px; height:2px; background:var(--foam);
+    border-radius:50%; opacity:.5; animation:twinkle 4s ease-in-out infinite;
+  }
+  @keyframes twinkle{ 0%,100%{opacity:.15;} 50%{opacity:.7;} }
+
+  /* ---------- Top flag / brand bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px;
+    background:linear-gradient(180deg, rgba(19,42,66,0.96), rgba(19,42,66,0.85));
+    border-bottom:1px solid rgba(199,154,62,0.35);
+    backdrop-filter:blur(6px);
+  }
+  .topbar .brand{
+    font-family:'Playfair Display', serif;
+    color:var(--foam);
+    font-size:1.05rem;
+    letter-spacing:.04em;
+    display:flex; align-items:center; gap:10px;
+  }
+  .topbar .brand .compass-mini{width:22px;height:22px;flex:none;}
+  .topbar nav{ display:flex; gap:6px; flex-wrap:wrap; }
+  .topbar nav button{
+    font-family:'Courier Prime', monospace;
+    font-size:.7rem; letter-spacing:.08em; text-transform:uppercase;
+    background:transparent; border:1px solid rgba(199,154,62,0.4);
+    color:var(--parchment); padding:7px 12px; border-radius:2px;
+    cursor:pointer; transition:.2s;
+  }
+  .topbar nav button:hover, .topbar nav button.active{
+    background:var(--brass); color:var(--deep-sea); border-color:var(--brass);
+  }
+
+  .view{ display:none; animation:fadein .5s ease; }
+  .view.active{ display:block; }
+  @keyframes fadein{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ================= TITLE / SETTING SAIL PAGE ================= */
+  .title-hero{
+    min-height:78vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:80px 20px 40px;
+    position:relative;
+  }
+  .compass-rose{ width:120px; height:120px; opacity:.9; margin-bottom:18px; }
+  .eyebrow{
+    font-family:'Courier Prime', monospace; letter-spacing:.35em; text-transform:uppercase;
+    font-size:.72rem; color:var(--brass); margin-bottom:18px;
+  }
+  .ships-log-script{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600;
+    color:var(--brass); font-size:clamp(2.2rem,6vw,3.6rem); line-height:1;
+    margin:0 0 6px;
+  }
+  .title-hero h1{
+    font-family:'Playfair Display', serif; font-weight:800;
+    color:var(--foam); font-size:clamp(1.9rem,5vw,3.1rem);
+    max-width:16ch; margin:0 auto 30px; line-height:1.15;
+    text-shadow:0 2px 24px rgba(0,0,0,.35);
+  }
+  .scroll-hint{
+    font-family:'Courier Prime', monospace; font-size:.75rem; color:var(--parchment-dark);
+    letter-spacing:.1em; margin-top:34px; opacity:.75;
+  }
+
+  .parchment-card{
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.02)),
+      var(--parchment);
+    border:1px solid var(--brass-dim);
+    border-radius:4px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.35), inset 0 0 60px rgba(158,122,46,0.08);
+    padding:44px clamp(22px,5vw,64px);
+    position:relative;
+  }
+  .parchment-card::before{
+    content:""; position:absolute; inset:8px;
+    border:1px solid rgba(158,122,46,0.35);
+    pointer-events:none;
+  }
+  .section-wrap{ max-width:840px; margin:0 auto; padding:0 20px 90px; }
+  .log-heading{
+    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600;
+    color:var(--brass-dim); font-size:clamp(1.6rem,3.6vw,2.3rem);
+    margin:0 0 14px; border-bottom:2px solid rgba(158,122,46,0.3); padding-bottom:10px;
+  }
+  .parchment-card p{ line-height:1.75; font-size:1.02rem; margin:0 0 20px; }
+  .parchment-card p:last-child{ margin-bottom:0; }
+  .parchment-card strong{ color:var(--brass-dim); }
+  .stack{ display:flex; flex-direction:column; gap:34px; margin-top:34px; }
+
+  .editme{
+    display:inline-block; margin-top:10px; font-family:'Courier Prime', monospace;
+    font-size:.7rem; letter-spacing:.05em; color:var(--mid-ocean); background:rgba(46,92,122,0.1);
+    border:1px dashed var(--mid-ocean); padding:4px 8px; border-radius:2px;
+  }
+
+  /* ================= VOYAGE MAP (NAV) ================= */
+  .map-view{ padding:60px 20px 100px; max-width:1000px; margin:0 auto; }
+  .map-title{
+    text-align:center; margin-bottom:8px;
+    font-family:'Playfair Display', serif; color:var(--foam); font-size:clamp(1.6rem,4vw,2.3rem);
+  }
+  .map-sub{
+    text-align:center; color:var(--parchment-dark); font-family:'Courier Prime',monospace;
+    font-size:.78rem; letter-spacing:.08em; margin-bottom:56px; text-transform:uppercase;
+  }
+  .route-wrap{ position:relative; padding:20px 0; }
+  .route-svg{ width:100%; height:auto; display:block; }
+  .port-list{
+    display:grid; grid-template-columns:1fr; gap:0;
+    position:relative;
+  }
+  .port-stop{
+    position:relative; display:flex; align-items:center; gap:22px;
+    padding:26px 10px; cursor:pointer; border:none; background:transparent;
+    text-align:left; width:100%; color:inherit; font:inherit;
+  }
+  .port-stop .marker{
+    flex:none; width:46px; height:46px; border-radius:50%;
+    background:var(--deep-sea); border:2px solid var(--brass);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display', serif; color:var(--brass); font-weight:700;
+    transition:.25s; position:relative; z-index:2;
+  }
+  .port-stop:hover .marker, .port-stop.visited .marker{
+    background:var(--brass); color:var(--deep-sea); transform:scale(1.08);
+  }
+  .port-stop .info h3{
+    margin:0 0 4px; font-family:'Playfair Display', serif; color:var(--foam); font-size:1.15rem;
+  }
+  .port-stop .info p{
+    margin:0; color:var(--parchment-dark); font-size:.88rem; font-family:'Lora', serif;
+  }
+  .port-stop .info .status{
+    font-family:'Courier Prime', monospace; font-size:.65rem; letter-spacing:.08em;
+    color:var(--brass); text-transform:uppercase; margin-top:6px; display:inline-block;
+  }
+  .port-line{
+    position:absolute; left:23px; top:0; bottom:0; width:2px;
+    background:repeating-linear-gradient(180deg, var(--brass) 0 6px, transparent 6px 14px);
+    opacity:.5; z-index:1;
+  }
+  .ship-marker{
+    position:absolute; left:0; font-size:1.3rem; transition:top .6s ease;
+    transform:translate(-2px,-50%);
+  }
+
+  /* ================= PORT (TOPIC) PAGE ================= */
+  .port-view{ padding:50px 20px 100px; max-width:880px; margin:0 auto; }
+  .port-header{ text-align:center; margin-bottom:38px; }
+  .port-header .tag{
+    font-family:'Courier Prime', monospace; font-size:.7rem; letter-spacing:.15em;
+    color:var(--brass); text-transform:uppercase; margin-bottom:10px; display:block;
+  }
+  .port-header h2{
+    font-family:'Playfair Display', serif; color:var(--foam); font-size:clamp(1.7rem,4vw,2.5rem);
+    margin:0;
+  }
+  .port-nav-btns{ display:flex; justify-content:space-between; margin:36px 0 0; gap:12px; flex-wrap:wrap;}
+  .btn{
+    font-family:'Courier Prime', monospace; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+    background:transparent; border:1px solid var(--brass); color:var(--parchment);
+    padding:11px 18px; border-radius:2px; cursor:pointer; transition:.2s;
+  }
+  .btn:hover{ background:var(--brass); color:var(--deep-sea); }
+  .btn.ghost{ border-color:rgba(199,154,62,0.35); color:var(--parchment-dark); }
+
+  .content-block{ margin-bottom:30px; }
+  .content-block h4{
+    font-family:'Cormorant Garamond', serif; font-style:italic; color:var(--brass-dim);
+    font-size:1.3rem; margin:0 0 10px;
+  }
+  .placeholder-box{
+    border:1px dashed var(--mid-ocean); background:rgba(46,92,122,0.06);
+    padding:16px 18px; border-radius:3px; color:#3a4a56; font-size:.92rem; line-height:1.6;
+  }
+
+  /* KWLSF manifest table */
+  .manifest{
+    margin-top:10px; border:1px solid var(--brass-dim); border-radius:3px; overflow:hidden;
+  }
+  .manifest-row{
+    display:grid; grid-template-columns:110px 1fr; border-top:1px solid rgba(158,122,46,0.35);
+  }
+  .manifest-row:first-child{ border-top:none; }
+  .manifest-label{
+    background:var(--parchment-dark); padding:14px 12px; font-family:'Courier Prime', monospace;
+    font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--brass-dim);
+    display:flex; flex-direction:column; justify-content:center; gap:2px;
+  }
+  .manifest-label small{ font-family:'Lora',serif; text-transform:none; font-size:.7rem; opacity:.75; letter-spacing:0;}
+  .manifest-value{
+    padding:14px 16px; font-size:.94rem; line-height:1.6; color:var(--ink);
+  }
+  .manifest-value[contenteditable="true"]{ outline:none; }
+  .manifest-value[contenteditable="true"]:focus{ background:rgba(199,154,62,0.08); }
+  .manifest-value:empty::before{ content: attr(data-placeholder); color:#8b8270; font-style:italic; }
+
+  @media (max-width:640px){
+    .manifest-row{ grid-template-columns:1fr; }
+    .manifest-label{ padding:10px 12px; }
+    .topbar{ padding:12px 16px; }
+    .topbar .brand{ font-size:.9rem; }
+    .parchment-card{ padding:30px 20px; }
+  }
+
+  /* image insert + editable images */
+  .btn-small{
+    font-family:'Courier Prime', monospace; font-size:.65rem; letter-spacing:.05em; text-transform:uppercase;
+    background:transparent; border:1px dashed var(--mid-ocean); color:var(--mid-ocean);
+    padding:6px 10px; border-radius:2px; cursor:pointer; margin-top:8px; transition:.2s;
+  }
+  .btn-small:hover{ background:var(--mid-ocean); color:var(--foam); border-style:solid; }
+  .placeholder-box img, .manifest-value img{
+    max-width:100%; display:block; margin:10px 0; border-radius:2px; border:1px solid var(--brass-dim);
+  }
+
+  /* ================= PORTFOLIO TAB ================= */
+  .portfolio-view{ padding:50px 20px 100px; max-width:1000px; margin:0 auto; }
+  .portfolio-intro{ text-align:center; margin-bottom:40px; }
+  .portfolio-intro h2{ font-family:'Playfair Display', serif; color:var(--foam); font-size:clamp(1.6rem,4vw,2.3rem); margin:0 0 8px;}
+  .portfolio-intro p{ color:var(--parchment-dark); font-family:'Lora',serif; font-size:.92rem; max-width:55ch; margin:0 auto;}
+  .portfolio-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:26px; margin-bottom:36px;
+  }
+  .portfolio-card{
+    background:var(--parchment); border:1px solid var(--brass-dim); border-radius:4px;
+    overflow:hidden; box-shadow:0 12px 26px rgba(0,0,0,.3); display:flex; flex-direction:column;
+  }
+  .portfolio-card .thumb{
+    width:100%; aspect-ratio:4/3; object-fit:cover; background:var(--mid-ocean); display:block;
+    cursor:pointer;
+  }
+  .portfolio-card .thumb.empty{
+    display:flex; align-items:center; justify-content:center; color:var(--foam);
+    font-family:'Courier Prime',monospace; font-size:.7rem; text-align:center; padding:14px;
+  }
+  .portfolio-card .card-body{ padding:16px 18px 20px; }
+  .portfolio-card h4{
+    font-family:'Playfair Display', serif; color:var(--brass-dim); font-size:1.05rem; margin:0 0 8px;
+    outline:none;
+  }
+  .portfolio-card .desc{
+    font-size:.88rem; line-height:1.6; color:var(--ink); outline:none; min-height:1.6em;
+  }
+  .portfolio-card .desc:empty::before{ content:"Click to add a description..."; color:#8b8270; font-style:italic; }
+  .portfolio-card .remove-item{
+    margin:10px 18px 0; align-self:flex-start;
+  }
+  .add-item-wrap{ text-align:center; }
+
+  /* ---------- port list row: open button + edit/remove ---------- */
+  .port-stop-row{ display:flex; align-items:center; gap:14px; position:relative; z-index:2; }
+  .port-open{
+    flex:1; display:flex; align-items:center; gap:22px; padding:26px 10px 26px 0;
+    cursor:pointer; border:none; background:transparent; text-align:left; color:inherit; font:inherit;
+  }
+  .port-open .marker{
+    flex:none; width:46px; height:46px; border-radius:50%;
+    background:var(--deep-sea); border:2px solid var(--brass);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Playfair Display', serif; color:var(--brass); font-weight:700; transition:.25s;
+  }
+  .port-open:hover .marker, .port-open.visited .marker{ background:var(--brass); color:var(--deep-sea); transform:scale(1.08); }
+  .port-open .info h3{ margin:0 0 4px; font-family:'Playfair Display', serif; color:var(--foam); font-size:1.15rem; }
+  .port-open .info p{ margin:0; color:var(--parchment-dark); font-size:.88rem; font-family:'Lora', serif; }
+  .port-open .info .status{
+    font-family:'Courier Prime', monospace; font-size:.65rem; letter-spacing:.08em;
+    color:var(--brass); text-transform:uppercase; margin-top:6px; display:inline-block;
+  }
+  .port-actions{ display:flex; gap:6px; flex:none; }
+  .add-port-wrap{ text-align:center; margin-top:20px; }
+
+  /* ---------- site footer ---------- */
+  .site-footer{
+    background:linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.35));
+    border-top:1px solid rgba(199,154,62,0.35);
+    padding:44px 24px 26px; margin-top:20px; position:relative;
+  }
+  .footer-grid{
+    max-width:1000px; margin:0 auto; display:grid; grid-template-columns:1.3fr 1fr 1fr;
+    gap:30px; padding-bottom:26px;
+  }
+  .footer-col h5{
+    font-family:'Courier Prime', monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--brass); margin:0 0 12px;
+  }
+  .footer-col p, .footer-col div{
+    color:var(--parchment-dark); font-size:.85rem; line-height:1.7; font-family:'Lora', serif;
+  }
+  .footer-col p[contenteditable="true"]{ outline:none; padding:2px 4px; border-radius:2px; }
+  .footer-col p[contenteditable="true"]:focus{ background:rgba(199,154,62,0.08); }
+  .footer-social{ display:flex; gap:10px; margin-top:6px; }
+  .footer-social a{
+    width:32px; height:32px; border-radius:50%; border:1px solid var(--brass-dim);
+    display:flex; align-items:center; justify-content:center; color:var(--brass);
+    text-decoration:none; font-size:.8rem; transition:.2s;
+  }
+  .footer-social a:hover{ background:var(--brass); color:var(--deep-sea); }
+  .footer-bottom{
+    max-width:1000px; margin:0 auto; border-top:1px solid rgba(199,154,62,0.2); padding-top:18px;
+    text-align:center; color:var(--parchment-dark); font-family:'Courier Prime', monospace;
+    font-size:.68rem; letter-spacing:.05em; opacity:.7;
+  }
+  @media (max-width:700px){ .footer-grid{ grid-template-columns:1fr; } }
+
+  /* ---------- Portfolio as blog ---------- */
+  .portfolio-card .thumb-count{
+    position:absolute; bottom:8px; right:8px; background:rgba(19,42,66,0.85); color:var(--foam);
+    font-family:'Courier Prime', monospace; font-size:.65rem; padding:3px 8px; border-radius:10px;
+  }
+  .portfolio-card{ position:relative; cursor:pointer; }
+  .portfolio-card .thumb-wrap{ position:relative; }
+
+  .post-view{ padding:50px 20px 100px; max-width:820px; margin:0 auto; }
+  .post-header h2{
+    font-family:'Playfair Display', serif; color:var(--foam); font-size:clamp(1.6rem,4vw,2.3rem);
+    margin:0 0 6px; outline:none;
+  }
+  .post-desc{
+    color:var(--parchment-dark); font-size:1rem; line-height:1.8; margin-bottom:30px; outline:none;
+    font-family:'Lora',serif;
+  }
+  .post-desc:empty::before{ content:"Click to write a description for this entry..."; font-style:italic; color:#7f93a3;}
+  .post-gallery{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-bottom:26px;
+  }
+  .post-photo{ position:relative; border-radius:4px; overflow:hidden; border:1px solid var(--brass-dim); }
+  .post-photo img{ width:100%; height:190px; object-fit:cover; display:block; }
+  .post-photo .remove-x{
+    position:absolute; top:6px; right:6px; width:24px; height:24px; border-radius:50%;
+    background:rgba(19,42,66,0.85); color:var(--foam); border:none; cursor:pointer; font-size:.8rem; line-height:1;
+  }
+  .post-add-photo{
+    border:2px dashed var(--mid-ocean); border-radius:4px; min-height:190px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:var(--mid-ocean); font-family:'Courier Prime',monospace; font-size:.75rem; text-align:center; padding:10px;
+  }
+  .post-add-photo:hover{ background:rgba(46,92,122,0.08); }
+  .post-footer-btns{ display:flex; justify-content:space-between; margin-top:20px; flex-wrap:wrap; gap:12px; }
+</style>
+</head>
+<body>
+
+<div class="ocean-bg"></div>
+<div class="stars" id="stars"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="compass-mini" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="none" stroke="#C79A3E" stroke-width="1.5"/><path d="M20 6 L23 20 L20 34 L17 20 Z" fill="#C79A3E" opacity=".8"/></svg>
+    Ship's Log
+  </div>
+  <nav>
+    <button data-view="title" class="active">Title Page</button>
+    <button data-view="map">Voyage Map</button>
+    <button data-view="portfolio">Portfolio</button>
+  </nav>
+</header>
+
+<!-- ================= TITLE PAGE ================= -->
+<section class="view active" id="view-title">
+  <div class="title-hero">
+    <svg class="compass-rose" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="92" fill="none" stroke="#C79A3E" stroke-width="1"/>
+      <circle cx="100" cy="100" r="70" fill="none" stroke="#C79A3E" stroke-width="1" opacity=".6"/>
+      <g stroke="#C79A3E" stroke-width="1" opacity=".7">
+        <line x1="100" y1="8" x2="100" y2="192"/>
+        <line x1="8" y1="100" x2="192" y2="100"/>
+        <line x1="30" y1="30" x2="170" y2="170"/>
+        <line x1="170" y1="30" x2="30" y2="170"/>
+      </g>
+      <path d="M100 20 L112 100 L100 180 L88 100 Z" fill="#C79A3E"/>
+      <path d="M20 100 L100 88 L180 100 L100 112 Z" fill="#C79A3E" opacity=".55"/>
+      <circle cx="100" cy="100" r="5" fill="#F8F5EC"/>
+    </svg>
+    <div class="eyebrow">In partial fulfillment · PHYS 50</div>
+    <div class="ships-log-script">Ship's Log</div>
+    <h1>Sailing Through Physical Concepts</h1>
+    <div class="scroll-hint">&#9660; scroll to read the entries below &#9660;</div>
+  </div>
+
+  <div class="section-wrap">
+    <div class="parchment-card">
+      <div class="stack">
+        <div>
+          <div class="log-heading">Welcome Aboard</div>
+          <p><strong>Welcome aboard!</strong> This ship's log contains all records of my journey through the raging currents of Physics. As I set sail on my learning voyage, I kindly invite you to follow the route I took to understand new concepts and information that I encountered.</p>
+        </div>
+        <div>
+          <div class="log-heading">Why I Chose This Title</div>
+          <p>I chose <em>"Ship's Log: Sailing Through Physical Concepts"</em> because my learning journey in physics can be compared to a ship sailing the ocean. The waters aren't always calm — sometimes you have to push through storms and hardships to keep moving forward. This journal, then, is a compilation of everything I've learned along my physics voyage.</p>
+        </div>
+        <div>
+          <div class="log-heading">What's Inside This Log</div>
+          <p>Each stop on the voyage map is a <strong>port</strong> — one topic from our course guide. Every port holds my notes on the concept, a KWLSF manifest (what I <strong>K</strong>new, <strong>W</strong>anted to know, <strong>L</strong>earned, <strong>S</strong>uggest, and how I'm <strong>F</strong>eeling that week), and any diagrams, links, or media I gathered along the way.</p>
+          <span class="editme">EDIT ME — this paragraph is a draft. Rewrite it in your own words before submitting.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center; padding-bottom:60px;">
+    <button class="btn" onclick="showView('map')">Begin the Voyage &#8594;</button>
+  </div>
+</section>
+
+<!-- ================= VOYAGE MAP ================= -->
+<section class="view" id="view-map">
+  <div class="map-view">
+    <h2 class="map-title">The Voyage Map</h2>
+    <div class="map-sub">Click a port to open that topic's log entry</div>
+
+    <div class="route-wrap">
+      <div class="port-line"></div>
+      <div class="port-list" id="port-list"></div>
+    </div>
+    <div class="add-port-wrap">
+      <button class="btn" onclick="addPort()">+ Add Port (New Topic)</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PORT (TOPIC) TEMPLATE ================= -->
+<section class="view" id="view-port">
+  <div class="port-view">
+    <div class="port-header">
+      <span class="tag" id="port-tag">Port</span>
+      <h2 id="port-title">Topic Name</h2>
+    </div>
+
+    <div class="content-block">
+      <h4>Log Entry</h4>
+      <div class="placeholder-box" id="port-notes" contenteditable="true" data-placeholder="Write your notes here: definitions, concept explanations, diagrams, embedded videos, or anything you want your reader to understand about this topic."></div>
+      <button class="btn-small" onclick="insertImage(this)">+ Insert Image</button>
+    </div>
+
+    <div class="content-block">
+      <h4>KWLSF Manifest</h4>
+      <div class="manifest">
+        <div class="manifest-row">
+          <div class="manifest-label">K <small>Know</small></div>
+          <div class="manifest-value" id="kwlsf-k" contenteditable="true" data-placeholder="What did you already know before this topic?"></div>
+        </div>
+        <div class="manifest-row">
+          <div class="manifest-label">W <small>Want</small></div>
+          <div class="manifest-value" id="kwlsf-w" contenteditable="true" data-placeholder="What did you want to know?"></div>
+        </div>
+        <div class="manifest-row">
+          <div class="manifest-label">L <small>Learned</small></div>
+          <div class="manifest-value" id="kwlsf-l" contenteditable="true" data-placeholder="What did you learn?"></div>
+        </div>
+        <div class="manifest-row">
+          <div class="manifest-label">S <small>Suggest</small></div>
+          <div class="manifest-value" id="kwlsf-s" contenteditable="true" data-placeholder="What do you suggest — for yourself, your classmates, or your teacher?"></div>
+        </div>
+        <div class="manifest-row">
+          <div class="manifest-label">F <small>Feeling</small></div>
+          <div class="manifest-value" id="kwlsf-f" contenteditable="true" data-placeholder="How are you feeling this week in PHYS 50?"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <h4>Captain's Reflection</h4>
+      <div class="placeholder-box" id="port-reflection" contenteditable="true" data-placeholder="A few sentences on how this topic connects to the rest of your voyage, or to your life outside class."></div>
+      <button class="btn-small" onclick="insertImage(this)">+ Insert Image</button>
+    </div>
+
+    <div class="port-nav-btns">
+      <button class="btn ghost" onclick="showView('map')">&#8592; Back to Map</button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn ghost" id="prev-port">&#8592; Previous Port</button>
+        <button class="btn" id="next-port">Next Port &#8594;</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PORTFOLIO (BLOG INDEX) ================= -->
+<section class="view" id="view-portfolio">
+  <div class="portfolio-view">
+    <div class="portfolio-intro">
+      <h2>The Ship's Collection</h2>
+      <p>A compiled gallery of outputs from the voyage. Click an entry to open it and see every photo with its description.</p>
+    </div>
+    <div class="portfolio-grid" id="portfolio-grid"></div>
+    <div class="add-item-wrap">
+      <button class="btn" onclick="addPortfolioItem()">+ Add Portfolio Entry</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PORTFOLIO POST (BLOG DETAIL) ================= -->
+<section class="view" id="view-portfolio-post">
+  <div class="post-view">
+    <div class="post-header">
+      <h2 id="pf-post-title" contenteditable="true"></h2>
+    </div>
+    <div class="post-desc" id="pf-post-desc" contenteditable="true" data-placeholder="Click to write a description for this entry..."></div>
+
+    <div class="post-gallery" id="pf-post-gallery"></div>
+
+    <div class="post-footer-btns">
+      <button class="btn ghost" onclick="closePortfolioPost()">&#8592; Back to Portfolio</button>
+      <button class="btn ghost" onclick="removePortfolioItem()">Remove This Entry</button>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h5>Ship's Log</h5>
+      <p contenteditable="true">Sailing Through Physical Concepts — a PHYS 50 e-portfolio.</p>
+    </div>
+    <div class="footer-col">
+      <h5>Contact the Captain</h5>
+      <p contenteditable="true">EDIT ME — your.email@up.edu.ph</p>
+      <p contenteditable="true">EDIT ME — +63 9XX XXX XXXX</p>
+    </div>
+    <div class="footer-col">
+      <h5>University</h5>
+      <p contenteditable="true">EDIT ME — University of the Philippines Los Baños, College, Laguna 4030</p>
+      <div class="footer-social">
+        <a href="#" title="Facebook">f</a>
+        <a href="#" title="Instagram">ig</a>
+        <a href="#" title="Link">&#128279;</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">Ship's Log: Sailing Through Physical Concepts &nbsp;·&nbsp; PHYS 50</div>
+</footer>
+
+<script>
+/* =========================================================
+   DATA — you can also add/edit everything from the browser
+   using the "+ Add Port" and "+ Add Portfolio Entry" buttons.
+   ========================================================= */
+let ports = [
+  { title:"Topic 1 — Rename Me", blurb:"One-line description of this topic.",
+    notes:"", k:"", w:"", l:"", s:"", f:"", reflection:"" },
+  { title:"Topic 2 — Rename Me", blurb:"One-line description of this topic.",
+    notes:"", k:"", w:"", l:"", s:"", f:"", reflection:"" },
+  { title:"Topic 3 — Rename Me", blurb:"One-line description of this topic.",
+    notes:"", k:"", w:"", l:"", s:"", f:"", reflection:"" },
+];
+
+let portfolioItems = [
+  { title:"Output 1 — Rename Me", description:"", images:[] },
+  { title:"Output 2 — Rename Me", description:"", images:[] },
+];
+
+let currentPortIndex = null;
+let currentPortfolioIndex = null;
+let activeView = 'title';
+const visited = new Set();
+
+function toRoman(num){
+  const vals=[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+  let res='';
+  for(const [v,s] of vals){ while(num>=v){ res+=s; num-=v; } }
+  return res;
+}
+
+/* ---------------- Voyage map / ports ---------------- */
+function buildPortList(){
+  const list = document.getElementById('port-list');
+  list.innerHTML = '';
+  ports.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'port-stop-row';
+
+    const openBtn = document.createElement('button');
+    openBtn.className = 'port-open' + (visited.has(i) ? ' visited' : '');
+    openBtn.innerHTML = `
+      <div class="marker">${i+1}</div>
+      <div class="info">
+        <h3>${p.title}</h3>
+        <p>${p.blurb}</p>
+        <span class="status">Port ${toRoman(i+1)}</span>
+      </div>`;
+    openBtn.addEventListener('click', () => openPort(i));
+
+    const actions = document.createElement('div');
+    actions.className = 'port-actions';
+    actions.innerHTML = `
+      <button class="btn-small" data-act="edit">Edit</button>
+      <button class="btn-small" data-act="remove">Remove</button>`;
+    actions.querySelector('[data-act="edit"]').addEventListener('click', () => editPort(i));
+    actions.querySelector('[data-act="remove"]').addEventListener('click', () => removePort(i));
+
+    row.appendChild(openBtn);
+    row.appendChild(actions);
+    list.appendChild(row);
+  });
+}
+
+function addPort(){
+  const title = prompt("Topic name for this new port:");
+  if(!title) return;
+  const blurb = prompt("One-line description (optional):") || "One-line description of this topic.";
+  ports.push({ title, blurb, notes:"", k:"", w:"", l:"", s:"", f:"", reflection:"" });
+  buildPortList();
+}
+
+function editPort(i){
+  const title = prompt("Edit topic name:", ports[i].title);
+  if(title === null) return;
+  const blurb = prompt("Edit one-line description:", ports[i].blurb);
+  ports[i].title = title || ports[i].title;
+  ports[i].blurb = blurb === null ? ports[i].blurb : blurb;
+  buildPortList();
+  if(currentPortIndex === i){
+    document.getElementById('port-title').textContent = ports[i].title;
+  }
+}
+
+function removePort(i){
+  if(!confirm(`Remove "${ports[i].title}" and everything written in it?`)) return;
+  ports.splice(i,1);
+  visited.clear();
+  buildPortList();
+}
+
+function saveCurrentPort(){
+  if(currentPortIndex === null) return;
+  const p = ports[currentPortIndex];
+  p.notes = document.getElementById('port-notes').innerHTML;
+  p.k = document.getElementById('kwlsf-k').innerHTML;
+  p.w = document.getElementById('kwlsf-w').innerHTML;
+  p.l = document.getElementById('kwlsf-l').innerHTML;
+  p.s = document.getElementById('kwlsf-s').innerHTML;
+  p.f = document.getElementById('kwlsf-f').innerHTML;
+  p.reflection = document.getElementById('port-reflection').innerHTML;
+}
+
+function loadPort(i){
+  const p = ports[i];
+  document.getElementById('port-tag').textContent = 'Port ' + toRoman(i+1);
+  document.getElementById('port-title').textContent = p.title;
+  document.getElementById('port-notes').innerHTML = p.notes;
+  document.getElementById('kwlsf-k').innerHTML = p.k;
+  document.getElementById('kwlsf-w').innerHTML = p.w;
+  document.getElementById('kwlsf-l').innerHTML = p.l;
+  document.getElementById('kwlsf-s').innerHTML = p.s;
+  document.getElementById('kwlsf-f').innerHTML = p.f;
+  document.getElementById('port-reflection').innerHTML = p.reflection;
+  document.getElementById('prev-port').style.visibility = i > 0 ? 'visible' : 'hidden';
+  document.getElementById('next-port').style.visibility = i < ports.length - 1 ? 'visible' : 'hidden';
+}
+
+function openPort(i){
+  saveCurrentPort();
+  currentPortIndex = i;
+  visited.add(i);
+  loadPort(i);
+  showView('port');
+  buildPortList();
+}
+
+document.getElementById('prev-port').addEventListener('click', () => { if(currentPortIndex>0) openPort(currentPortIndex-1); });
+document.getElementById('next-port').addEventListener('click', () => { if(currentPortIndex<ports.length-1) openPort(currentPortIndex+1); });
+
+/* ---------------- view switching (saves whatever's open before leaving) ---------------- */
+function showView(name){
+  if(activeView === 'port') saveCurrentPort();
+  if(activeView === 'portfolio-post') savePortfolioPost();
+
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  activeView = name;
+
+  document.querySelectorAll('.topbar nav button').forEach(b => b.classList.remove('active'));
+  const navName = (name === 'port') ? 'map' : (name === 'portfolio-post' ? 'portfolio' : name);
+  const navBtn = document.querySelector(`.topbar nav button[data-view="${navName}"]`);
+  if(navBtn) navBtn.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.querySelectorAll('.topbar nav button').forEach(b=>{
+  b.addEventListener('click', ()=> showView(b.dataset.view));
+});
+
+// starfield
+const starField = document.getElementById('stars');
+for(let i=0;i<50;i++){
+  const s = document.createElement('span');
+  s.style.left = Math.random()*100+'%';
+  s.style.top = Math.random()*60+'%';
+  s.style.animationDelay = (Math.random()*4)+'s';
+  starField.appendChild(s);
+}
+
+/* ---------------- image insert inside notes / reflection boxes ---------------- */
+function insertImage(btn){
+  const url = prompt("Paste the image link (URL). If you're hosting on GitHub Pages, upload the photo to an /images folder in your repo and paste its path, e.g. images/photo1.jpg");
+  if(!url) return;
+  const target = btn.previousElementSibling;
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = "";
+  target.appendChild(img);
+}
+
+/* ---------------- Portfolio (blog-style) ---------------- */
+function buildPortfolioGrid(){
+  const grid = document.getElementById('portfolio-grid');
+  grid.innerHTML = '';
+  portfolioItems.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'portfolio-card';
+    card.addEventListener('click', () => openPortfolioPost(i));
+
+    const thumbWrap = document.createElement('div');
+    thumbWrap.className = 'thumb-wrap';
+    if(item.images.length){
+      thumbWrap.innerHTML = `<img class="thumb" src="${item.images[0]}" alt="">
+        <span class="thumb-count">${item.images.length} photo${item.images.length>1?'s':''}</span>`;
+    } else {
+      thumbWrap.innerHTML = `<div class="thumb empty">No photos yet — click to open and add some</div>`;
+    }
+    card.appendChild(thumbWrap);
+
+    const body = document.createElement('div');
+    body.className = 'card-body';
+    body.innerHTML = `<h4>${item.title}</h4><div class="desc">${item.description ? item.description.replace(/<[^>]+>/g,'').slice(0,80) : 'No description yet'}</div>`;
+    card.appendChild(body);
+
+    grid.appendChild(card);
+  });
+}
+
+function addPortfolioItem(){
+  portfolioItems.push({ title:"New Entry — Rename Me", description:"", images:[] });
+  buildPortfolioGrid();
+  openPortfolioPost(portfolioItems.length - 1);
+}
+
+function loadPortfolioPost(i){
+  const item = portfolioItems[i];
+  document.getElementById('pf-post-title').textContent = item.title;
+  document.getElementById('pf-post-desc').innerHTML = item.description;
+  renderPostGallery(item);
+}
+
+function renderPostGallery(item){
+  const gallery = document.getElementById('pf-post-gallery');
+  gallery.innerHTML = '';
+  item.images.forEach((url, idx) => {
+    const ph = document.createElement('div');
+    ph.className = 'post-photo';
+    ph.innerHTML = `<img src="${url}" alt=""><button class="remove-x" title="Remove photo">&times;</button>`;
+    ph.querySelector('.remove-x').addEventListener('click', (e) => {
+      e.stopPropagation();
+      item.images.splice(idx,1);
+      renderPostGallery(item);
+    });
+    gallery.appendChild(ph);
+  });
+  const addTile = document.createElement('div');
+  addTile.className = 'post-add-photo';
+  addTile.textContent = '+ Add Photo';
+  addTile.addEventListener('click', () => {
+    const url = prompt("Paste the image link (URL) or local path, e.g. images/photo1.jpg");
+    if(!url) return;
+    item.images.push(url);
+    renderPostGallery(item);
+  });
+  gallery.appendChild(addTile);
+}
+
+function openPortfolioPost(i){
+  currentPortfolioIndex = i;
+  loadPortfolioPost(i);
+  showView('portfolio-post');
+}
+
+function savePortfolioPost(){
+  if(currentPortfolioIndex === null) return;
+  const item = portfolioItems[currentPortfolioIndex];
+  item.title = document.getElementById('pf-post-title').textContent.trim() || item.title;
+  item.description = document.getElementById('pf-post-desc').innerHTML;
+}
+
+function closePortfolioPost(){
+  showView('portfolio');
+  buildPortfolioGrid();
+}
+
+function removePortfolioItem(){
+  if(!confirm(`Remove "${portfolioItems[currentPortfolioIndex].title}"? This deletes its photos and description.`)) return;
+  portfolioItems.splice(currentPortfolioIndex,1);
+  currentPortfolioIndex = null;
+  activeView = 'portfolio'; // skip the save-on-leave since we just deleted it
+  showView('portfolio');
+  buildPortfolioGrid();
+}
+
+buildPortList();
+buildPortfolioGrid();
+</script>
+
+</body>
+</html>
